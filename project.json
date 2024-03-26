@@ -5,7 +5,16 @@
     "x86",
     "x86_64"
   ],
-  "assets": [],
+  "assets": [
+    {
+      "form": "/storage/emulated/0/脚本/投壶小天才",
+      "to": "/project"
+    },
+    {
+      "form": "file:///android_asset/mlkit-google-ocr-models",
+      "to": "/mlkit-google-ocr-models"
+    }
+  ],
   "buildDir": "build",
   "build": {
     "build_id": null,
@@ -14,32 +23,40 @@
   },
   "useFeatures": [],
   "icon": "res/logo.png",
-  "ignoredDirs": [],
-  "encrypt-code": false,
+  "ignoredDirs": [
+    "build"
+  ],
+  "encrypt-code": true,
   "launchConfig": {
-    "displaySplash": true,
+    "displaySplash": false,
     "hideAccessibilityServices": false,
     "hideLauncher": false,
-    "hideLogs": false,
+    "hideLogs": true,
     "stableMode": false,
-    "volumeUpcontrol": false,
-    "permissions": [],
+    "volumeUpcontrol": true,
+    "permissions": [
+      "draw_overlay"
+    ],
     "serviceDesc": "使脚本自动操作(点击、长按、滑动等)所需，若关闭则只能执行不涉及自动操作的脚本。",
-    "splashIcon": null,
+    "splashIcon": "res/splashIcon.png",
     "splashText": "Powered by Autoxjs.com"
   },
-  "libs": [],
+  "libs": [
+    "libp7zip.so",
+    "libjackpal-androidterm5.so",
+    "libjackpal-termexec2.so"
+  ],
   "main": "main.js",
   "name": "投壶小天才",
-  "outputPath": null,
+  "outputPath": "/storage/emulated/0/脚本/投壶小天才/build",
   "packageName": "com.script.touhu",
-  "projectDirectory": null,
+  "projectDirectory": "/storage/emulated/0/脚本/投壶小天才",
   "scripts": {},
   "signingConfig": {
     "alias": null,
     "keystore": null
   },
-  "sourcePath": null,
-  "versionCode": 1,
-  "versionName": "1.0.0"
+  "sourcePath": "/storage/emulated/0/脚本/投壶小天才/main.js",
+  "versionCode": 3,
+  "versionName": "1.0.3"
 }
