@@ -8,16 +8,28 @@ engines.all().forEach(item => {
 
 })
 var storage = storages.create("touhu");
-var lastY1 = storage.get("lastY1", 2430)
-var lastY2 = storage.get("lastY2", 2350)
+var testCount = storage.get("testCount", 0)
+var lastY1 = storage.get("lastY1", device.height * 0.6)
+var lastY2 = storage.get("lastY2", device.height * 0.65)
 var lineWidth = storage.get("lineWidth", device.width) //刻度线宽度
 var w1TouchAble = false
 var w2TouchAble = false
 var w1X = 0
 var w2X = device.width - lineWidth
-var w1, w2;
 var wy1 = lastY1;
 var wy2 = lastY2;
+testCount++
+var date = +new Date()
+let threeDay = 259200000
+let outDate = date + threeDay
+//outDate = 10080
+log(outDate)
+if (date > outDate) {
+    alert("感谢体验！请联系qq 910689331购买永久版本")
+    exit()
+} else {
+    storage.put("testCount", testCount)
+}
 
 if (!floaty.checkPermission()) {
     // 没有悬浮窗权限，提示用户并跳转请求
@@ -29,7 +41,6 @@ if (!floaty.checkPermission()) {
 } else {
     //2430 2350
     toastLog("已有悬浮窗权限");
-
 
     w1 = floaty.rawWindow(
         <horizontal gravity="center">
@@ -46,7 +57,7 @@ if (!floaty.checkPermission()) {
     );
 
     resetWindow()
-    w1.滑块1.setOnTouchListener(function (view, event) {
+    w1.滑块1.setOnTouchListener(function(view, event) {
         if (!w1TouchAble) return true;
         switch (event.getAction()) {
             case event.ACTION_DOWN:
@@ -64,7 +75,7 @@ if (!floaty.checkPermission()) {
         return true;
     });
 
-    w2.滑块2.setOnTouchListener(function (view, event) {
+    w2.滑块2.setOnTouchListener(function(view, event) {
         if (!w2TouchAble) return true;
         switch (event.getAction()) {
             case event.ACTION_DOWN:
@@ -82,7 +93,6 @@ if (!floaty.checkPermission()) {
         return true;
     });
 
-
     var menuWindow = floaty.rawWindow(
         <vertical height="500">
             <button  style="Widget.AppCompat.Button.Colored" text="帮助说明" height="45" id="帮助说明"/>
@@ -96,19 +106,19 @@ if (!floaty.checkPermission()) {
                 <button style="Widget.AppCompat.Button.Colored" layout_weight="1" height="45" text="结束" id="结束">
                 </button>
             </linear>
-
+            
         </vertical>
 
-
     );
+
     menuWindow.setSize(device.width, 500)
     //第二个点位调整也就是8/10的位置
-    menuWindow.setPosition(0, 250);
+    menuWindow.setPosition(0, 500);
     menuWindow.重置.on("click", () => {
-        storage.put("lastY1", device.height / 2)
-        storage.put("lastY2", device.height / 3)
-        lastY1 = device.height / 2
-        lastY2 = device.height / 3
+        storage.put("lastY1", device.height * 0.6)
+        storage.put("lastY2", device.height * 0.65)
+        lastY1 = device.height * 0.6
+        lastY2 = device.height * 0.65
         w1TouchAble = false;
         w2TouchAble = false;
         log("lastY1 " + 2430)
@@ -130,6 +140,8 @@ if (!floaty.checkPermission()) {
         w2TouchAble = false;
         w1.滑块1.attr('height', 2)
         w2.滑块2.attr('height', 2)
+        storage.put("lastY1", lastY1)
+        storage.put("lastY2", lastY2)
         resetWindow()
     })
 
@@ -144,7 +156,9 @@ if (!floaty.checkPermission()) {
 }
 
 function resetWindow() {
-    ui.run(function () {
+    ui.run(function() {
+        w1.setTouchable(w1TouchAble)
+        w2.setTouchable(w2TouchAble)
         w1.setSize(w1TouchAble ? lineWidth + 40 : lineWidth, 100)
         w1.setPosition(w1X, lastY1)
 
@@ -157,4 +171,5 @@ function resetWindow() {
 
 }
 setInterval(() => {
+
 }, 1000);
