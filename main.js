@@ -1,4 +1,5 @@
 //安卓版本高于Android 9
+setScreenMetrics(1080,2400)
 log("我的引擎" + engines.myEngine())
 engines.all().forEach(item => {
     if (item.id != engines.myEngine().id) {
