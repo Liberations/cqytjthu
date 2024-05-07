@@ -1,24 +1,28 @@
-images.requestScreenCapture(false)
 auto()
-//首个杂货铺点击位置
-shopStartX = 744
-shopStartY = 243
-//每个方块的宽度
-shopWidth = 274
-//每个杂货铺的高度
-shopHeight = 117
-//修改销冠数量
-shopCount = 24
-shopCol = 4
-shopRow = 6
-images.captureScreen()
-//杂货铺收取间隔（秒）
-shopSleepTime = 30
-let 测试滑块 = images.read("测试滑块.jpg")
-let startButton = images.read("起点.jpg")
+setScreenMetrics(2400, 1080);
+//安卓版本高于Android 9
+if (device.sdkInt > 28) {
+    //等待截屏权限申请并同意
+    threads.start(function () {
+        packageName('com.android.systemui').text('立即开始').waitFor();
+        text('立即开始').click();
+    });
+}
+//申请截屏权限
+if (!requestScreenCapture(false)) {
+    toastLog("请求截图失败");
+    exit()
+}
 let endButton = images.read("终点.jpg")
+
+let sailCount = 0 //上货次数
+let shopSleepTime = 30 //杂货铺收取间隔（秒）
+let shopCount = 24 //修改销冠数量
+let 一键补货 = false //是否一键补货消耗补货鸟
+let 自动上货 = true //是否自动上货 按原来杂货铺的物品上架
+let 是否自动收货 = true //有些仓库爆满的关闭这个让无用收
 //testFun()
-sailCount = 0
+
 shopPoints = [
     [744, 350],
     [1022, 350],
@@ -46,17 +50,28 @@ shopPoints = [
     [1470, 840], //第5排
 ]
 
+function testFun() {
+    测试滑块 = images.captureScreen()
+    //images.save(测试滑块, "/sdcard/脚本/atest.png", "png", 100)
+    let pos2 = images.findImage(测试滑块, endButton, {
+        "similar": 0.6
+    })
+
+    if (pos2) {
+        log("找到滑动解锁")
+        swipe(830, 629, pos2.x + endButton.width / 2, 629, 2000)
+        sleep(2000)
+        return true
+    } else {
+        log("未找到滑动解锁")
+    }
+    return false
+}
+
 function main() {
-    shopRow = Math.ceil(shopCount / shopCol)
-    log("杂货铺数量" + shopCount + "行数" + shopRow + "列数" + shopCol)
     log("开始运行")
     sleep(1000)
     while (true) {
-        //let find = findConin()
-        let date = new Date()
-        if (date.getHours() > 7) {
-            // shopSleepTime = 2
-        }
         findTap()
         sleep(shopSleepTime * 1000)
     }
@@ -74,70 +89,67 @@ function setLog(text) {
 }
 
 function findTap() {
-    //点击销冠位置
+    log("点击销冠位置")
     click(1963, 208)
     sleep(800)
-    //点击全部接取
+    log("点击全部接取")
     click(2060, 708)
     sleep(800)
-    //点击一键收取
+    log("点击一键收取")
     click(2060, 925)
     sleep(2000)
-    img = images.captureScreen()
-    let pos1 = images.findImage(img, startButton, {
-        "similar": 0.6
-    })
-    let pos2 = images.findImage(img, endButton, {
-        "similar": 0.6
-    })
-
+    let 找到滑块 = testFun()
     //狗币滑块解锁破解
-    if (pos1 && pos2) {
-        log("找到滑动解锁")
-        Swipe(810, 617, pos2.x, 617, 1000)
-        sleep(2000)
-        //点击全部接取
+    if (找到滑块) {
+        log("点击全部接取")
         click(2060, 708)
         sleep(800)
-        //点击一键收取
+        log("点击一键收取")
         click(2060, 925)
-        sleep(2000)
-        //点击右上角返回
-        click(2270, 137)
         sleep(800)
+        sailGood()
         return
     }
+    sailGood()
+}
+
+function sailGood() {
     //点击右上角返回
     click(2270, 137)
     sleep(800)
     sailCount++
     //10分钟上架一次
     if (sailCount % 20 != 1) {
+        log("暂不上架")
         return
     }
     //点击总览
     click(2244, 200)
     sleep(800)
-    //点击一键收取
-    click(1160, 912)
-    sleep(800)
-    //点击销售
-    click(1965, 489)
-    sleep(800)
-    //点击一键补货
-    click(955, 936)
-    sleep(800)
-    //点击确定
-    click(1628, 842)
-    sleep(800)
+    if (是否自动收货) {
+        //点击一键收取
+        click(1160, 912)
+        sleep(800)
+        //点击销售
+        click(1965, 489)
+        sleep(800)
+    }
+    if (一键补货) {
+        //点击一键补货
+        click(955, 936)
+        sleep(800)
+        //点击确定
+        click(1628, 842)
+        sleep(800)
+    }
     //点击一键收取
     click(1350, 912)
     sleep(800)
     //点击外围
     click(2200, 869)
+
     var count = 0
     sleep(1000)
-
     //到后期杂货都有自动补货后以下部分可以删除
     shopPoints.forEach((pos) => {
         let clickX = pos[0]
@@ -171,8 +183,7 @@ function findTap() {
             return
         }
     })
-   //到后期杂货都有自动补货后以上部分可以删除
-
+    //到后期杂货都有自动补货后以上部分可以删除
 }
 
 
@@ -246,19 +257,3 @@ window.stopButton.click(() => {
 //保持脚本运行
 setInterval(() => { }, 5000);
 
-function testFun() {
-    测试滑块 = images.captureScreen()
-    let pos1 = images.findImage(测试滑块, startButton, {
-        "similar": 0.6
-    })
-    let pos2 = images.findImage(测试滑块, endButton, {
-        "similar": 0.6
-    })
-
-    if (pos1 && pos2) {
-        log("找到滑动解锁")
-        Swipe(pos1.x, pos1.y, pos2.x, pos2.y, 1000)
-        sleep(2000)
-        return
-    }
-}
